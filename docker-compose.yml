@@ -1,4 +1,35 @@
 services:
+
+ 
+
+ 
+  # NEW SERVER PROVER
+    serverprover:
+        image: serverprover
+        build:
+            context: ./
+            dockerfile: serverprover.Dockerfile
+        working_dir: /home/ServerProver
+        env_file: 
+            - vars.env
+        command: bash -c "python init_serverp.py"
+        cap_add:
+            - NET_ADMIN
+            - NET_RAW
+        stdin_open: true   # docker run -i
+        tty: true          # docker run -t
+        sysctls:
+            - net.ipv4.ip_forward=1
+            - net.ipv4.tcp_timestamps=0
+        networks:
+            default:
+                ipv4_address: 172.19.0.5
+        volumes:
+            - tests:/home/Tests
+
+
+    
+   
     middlebox:
         image: middlebox
         build: 

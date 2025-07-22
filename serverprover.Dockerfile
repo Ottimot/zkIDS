@@ -8,8 +8,9 @@ ENV APT_DEPS git \
 			python-is-python3 \
 			pip \
 			libgomp1 nano iproute2 
-ENV PIP_DEPS requests ecdsa cryptography pyshark psutil
-ENV BUILD_DEPS build-essential cmake git libgmp3-dev libprocps-dev libboost-program-options-dev libssl-dev pkg-config
+ENV BUILD_DEPS build-essential cmake git libgmp3-dev libprocps-dev python3-markdown libboost-program-options-dev libssl-dev pkg-config
+ENV PIP_DEPS requests flask pyshark psutil
+
 RUN apt-get update -qq && \
 	apt-get upgrade -qq
 RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime
@@ -22,9 +23,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 #RUN ip route add 172.19.0.4 via 172.19.0.2 dev eth0 src 172.19.0.3
 
-COPY ./Client /home/Client
-COPY ./Middlebox/trackers.py /home/Middlebox/
-COPY ./Middlebox/runprocess.py /home/Middlebox/
+COPY ./ServerProver /home/ServerProver
 COPY ./xjsnark_decompiled /home/xjsnark_decompiled
 COPY ./libsnark /home/libsnark
 WORKDIR /home/

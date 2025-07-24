@@ -18,20 +18,20 @@ sudo apt install build-essential gcc-9 g++-9 cmake git libgmp3-dev libprocps-dev
 > ```
 > After building, you can revert this change by linking back the previous default GCC and G++ versions.
 
-- Move to libsnark directory and create the build folder 
-```bash
-cd libsnark && mkdir build && cd build
-```
-
-- Compile libsnark with the preferred compilation flags
-```bash
-cmake <flags> ..
-```
-then 
-```bash
-make
-``` 
-Tested flags: ```-DMULTICORE=ON``` and ```-DUSE_PT_COMPRESSION=OFF```
+> **In the current repository, the build folder has been already created and the following commands have been already executed** :
+>- Move to libsnark directory and create the build folder 
+>```bash
+>cd libsnark && mkdir build && cd build
+>```
+>- Compile libsnark with the preferred compilation flags
+>```bash
+>cmake <flags> ..
+>```
+>then 
+>```bash
+>make
+>``` 
+>Tested flags: ```-DMULTICORE=ON``` and ```-DUSE_PT_COMPRESSION=OFF```
 
 - Build the docker images from the repo root
 ```bash
@@ -46,7 +46,20 @@ docker compose up
 docker attach zkids-client-1
 ```
 If setup is finished press enter or type the URI to make the request to.
-  
+
+## Architecture and components
+
+The zkIDS system is composed of the following main components:
+
+- **Client**: obtains from the Middlebox the parameters to generate the proof and generate the trascript of the connection with the Server. Delegate the Prover Server for the computation of the proof. 
+- **Prover Server**: builds the proof from the client's TLS session transcript.
+- **Middlebox**: verifies the zero-knowledge proof to decide whether to allow the connection Client-Server.
+- **Server (NGINX)**: generic TLS server used as a test endpoint.
+
+All components run in Docker containers and are orchestrated via Docker Compose.
+
+
+ <!-- 
 # Run Benchmarks
 - Build the docker compose images
 - In the ```vars.env``` file, set the environment variables such that TEST and RUN are set for tests, then choose the circuit to run.
@@ -68,3 +81,4 @@ If setup is finished press enter or type the URI to make the request to.
       - On the "Output Path" section, select any folder to put the java files. For example select the MPS Generated Code folder.
 - To edit policies, open the xjsnark.sandbox section on the left sidebar, under "PolicyCheck" you find the three String / Merkle / Merkle Token policies for HTTP traffic
 - To compile the policies, right click on either the whole xjsnark.sandbox or the single PolicyCheck module and select "Make Model" or "Make Solution". The generated java files should be in the "MPS Generated Code" folder.
+-->

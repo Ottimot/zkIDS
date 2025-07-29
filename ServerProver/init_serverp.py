@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file, jsonify
 import subprocess
 import os
+from membership_proofs import *
 
 app = Flask(__name__)
 
@@ -41,7 +42,6 @@ def generate_proof():
     elif tree_path != "":
         print("Computing proof...")
         merkle_filename = f"merkle_witness.{client_random}{packet_number}.txt"
-        # Assumi che compute_proof sia disponibile nel contesto
         compute_proof(command, tree_path, anon, f"files/{merkle_filename}", "files/generated_merkle_tree.txt")
 
         if client_token == "":

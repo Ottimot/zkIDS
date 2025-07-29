@@ -50,6 +50,7 @@ def main(host, server):
 	# Save the response file
 	save_file(response_key, 'files/provKey.bin')
 	print("ZK Data saved")
+	print("Attach to the client container and press enter to send the HTTPS request to the server.")
 	
 	if 'Anonymized-Tree' in response_params.headers:
 		response_tree = requests.get("http://"+host+":5001/url-list", headers=headers)
@@ -70,15 +71,7 @@ def main(host, server):
 	elif 'Allowed-URL' in response_params.headers:
 		url_wildcard = response_params.headers.get('Allowed-URL')
 		print("Allowed URL wildcard: ", url_wildcard)
-		circuit = 'HTTP_String'
-	
-	#if client_token:
-	#	with open('token.txt', 'w') as token_file:
-	#		token_file.write(client_token)
-	#	print("Authentication succeeded, Client-Token obtained.")
-	#else:
-	#	print("Error, Client-Token not found")
-	
+		circuit = 'HTTP_String'	
 	while True:
 		prompt=input("Setup completed. Press enter to generate request or 'q' to quit: ")
 		if prompt.lower() == "":
@@ -93,10 +86,11 @@ def main(host, server):
 			print("Sending HTTP request(s) to "+function)
 			(random_id, numPackets) = make_tls_connection(server, function, keepalive, circuit, list_path, url_wildcard, anon, client_token, False)
 			for pkt in numPackets:
-				print(pkt)
+				#print(pkt)
+
 				file_path = "files/proof"+random_id.hex()+pkt+".bin"
 				url = "http://"+host+":5001/prove"
-				print("Proof sent!")
+				print("Proof sent to middlebox!")
 				headers = {'Client-ID': client_id, 'Random-ID':random_id.hex(), 'PacketNum': pkt}
 				send_file(file_path, url, headers)
 

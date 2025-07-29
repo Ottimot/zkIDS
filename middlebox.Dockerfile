@@ -24,13 +24,14 @@ COPY ./Middlebox /home/Middlebox
 COPY ./xjsnark_decompiled /home/xjsnark_decompiled
 COPY ./libsnark /home/libsnark
 WORKDIR /home/
-#RUN [ ! -d "libsnark/build" ] || [ -z "$(ls -A libsnark/build)" ] && (DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends $BUILD_DEPS && cd libsnark && mkdir -p build && cd build && cmake .. && make && apt-get remove -y $BUILD_DEPS)
+
+#building libsnark - you can build it outside of the container by running the same build commands [cmake .. -DMULTICORE=ON -DUSE_PT_COMPRESSION=OFF && make]
 RUN set -e; \
     if [ ! -d "libsnark/build" ] || [ -z "$(ls -A libsnark/build)" ]; then \
         echo "Building libsnark..."; \
         apt-get update -qq && \
         DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends $BUILD_DEPS && \
-        cd libsnark && mkdir -p build && cd build && cmake .. && make && \
+        cd libsnark && mkdir -p build && cd build && cmake .. -DMULTICORE=ON -DUSE_PT_COMPRESSION=OFF && make && \
         apt-get remove -y $BUILD_DEPS && apt-get autoremove --purge -qq; \
     else \
         echo "libsnark already built, skipping."; \

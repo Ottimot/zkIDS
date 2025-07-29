@@ -14,6 +14,8 @@ from membership_proofs import *
 
 #SERVER = 'server'
 #SERVER = 'localhost'
+PROVER_IP = '172.19.0.5'
+PROVER_PORT = '5002'
 pathstr = '/pippo'
 allowed = "/function"
 method = "GET"
@@ -179,8 +181,6 @@ def make_tls_connection(SERVER, pathstr, keepalive, circuitname, tree_path, allo
         "Host": "oo", 
         "Accept-Encoding": "text/plain"
     }
-    #http_conn.request("POST", pathstr, open("ebpf.pdfcircuit","rb"), headers)
-    #this is the correct command, uncomment after
     http_conn.request(method, pathstr, body=None, headers=headers)
     
     
@@ -207,79 +207,8 @@ def make_tls_connection(SERVER, pathstr, keepalive, circuitname, tree_path, allo
     print_test(dict)
     f.close()
     sys.stdout = original_stdout
-    '''
-    f = open("transcript_resumption.txt", "w")
-    sys.stdout = f
-    print_test(get_test_values(tls_conn2)) #PSK is now set! Previous session was resumed as specified on resumptionsession variable!
-    f.close() '''
-    
-    #if(testing):
-    #    start_time = time.time()
-    #    command = method+" "+pathstr
-    #    print("Generating circuit and parameters...")
-    #    if(allowed != ""):
-    #        print("Running String circuit")
-    #        out2=[["Running circuit", time.time()-start_time, 0]]
-    #        (out, mem, cpu_times)= trackRun_cputime(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" "+allowed + ' ' + tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split(), "xjsnark_proof"+circuitname, [start_time, 0])
-    #        out = out2 + out
-            #print("OUT ARRAY: ", out)
-            #subprocess.run(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" "+allowed + ' ' + tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split())
-    #    elif(tree_path != ""):
-    #        #input_path = "files/anon_tree" if anon else "files/allowlist.txt"
-    #        print("Computing proof...")
-    #        out2=[["Running circuit", time.time()-start_time, 0]]
-    #        merkle_filename = ("merkle_witness."+tls_conn._clientRandom.hex()+str(packetNumber)+".txt")
-    #        compute_proof(command, tree_path, anon, "files/"+merkle_filename, "files/generated_merkle_tree.txt")
-    #        out2+=[["PROOF COMPUTED, Running circuit", time.time()-start_time, 0]]
-    #        if(client_token == ""):
-    #            print("Running Merkle circuit")
-    #            (out, mem, cpu_times)=trackRun_cputime(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" files/"+merkle_filename+" /function " + tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split(), "xjsnark_proof"+circuitname, [start_time, 0])
-    #            out=out2+out
-                #subprocess.run(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" files/"+merkle_filename+" /function " + tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split())
-    #        else:
-    #            print("Running Merkle Token circuit")
-    #            (out, mem, cpu_times)=trackRun_cputime(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" files/"+merkle_filename+" "+client_token+' '+ tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split(), "xjsnark_proof"+circuitname, [start_time, 0])								
-    #            out = out2 + out
-                
-                #subprocess.run(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" files/"+merkle_filename+" "+client_token+' '+ tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split())
-    #    print("PROOF COMPUTED!")
-    #    (out3, mem2, cpu_times2) = trackRun_cputime(('../libsnark/build/libsnark/jsnark_interface/run_zkmb files/'+circuitname+'.arith files/'+circuitname+'_'+tls_conn._clientRandom.hex()+str(packetNumber)+'.in prove '+tls_conn._clientRandom.hex() + ' '+str(packetNumber)).split(), "libsnark_proof"+circuitname, [start_time, out[-1][2]])
-    #    cpu_times +=cpu_times2
-    #    out+=out3
-    #    mem+=mem2
 
-        
-        #subprocess.run(('../libsnark/build/libsnark/jsnark_interface/run_zkmb '+circuitname+'.arith '+circuitname+'_'+tls_conn._clientRandom.hex()+str(packetNumber)+'.in prove '+tls_conn._clientRandom.hex() + ' '+str(packetNumber)).split())
-        #subprocess.run(('rm files/'+circuitname+'_'+tls_conn._clientRandom.hex()+str(packetNumber)+'.in').split())
-    #    return(tls_conn._clientRandom, ['1'], out, mem, cpu_times)
-    
-    
-    #command = method+" "+pathstr
-    #command = pathstr
-    #print("Generating circuit and parameters...")
-    #if(allowed != ""):
-    #	print("Running String circuit")
-    #	subprocess.run(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" "+allowed + ' ' + tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split())
-    #elif(tree_path != ""):
-    #	#input_path = "files/anon_tree" if anon else "files/allowlist.txt"
-    #	print("Computing proof...")
-    #	merkle_filename = ("merkle_witness."+tls_conn._clientRandom.hex()+str(packetNumber)+".txt")
-    #	compute_proof(command, tree_path, anon, "files/"+merkle_filename, "files/generated_merkle_tree.txt")
-    #	if(client_token == ""):
-    #		print("Running Merkle circuit")
-    #		subprocess.run(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" files/"+merkle_filename+" /function " + tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split())
-    #	else:
-    #		print("Running Merkle Token circuit")
-    #		subprocess.run(('java -cp ../xjsnark_decompiled/backend_bin_mod/:../xjsnark_decompiled/xjsnark_bin/ xjsnark.PolicyCheck.'+circuitname+' run files/'+filename+" files/"+merkle_filename+" "+client_token+' '+ tls_conn._clientRandom.hex() + ' ' + str(packetNumber)).split())
-    #print("PROOF COMPUTED!")
-    #subprocess.run(('../libsnark/build/libsnark/jsnark_interface/run_zkmb files/'+circuitname+'.arith files/'+circuitname+'_'+tls_conn._clientRandom.hex()+str(packetNumber)+'.in prove '+tls_conn._clientRandom.hex() + ' '+str(packetNumber)).split()) """
-    #subprocess.run(('rm '+circuitname+'_'+tls_conn._clientRandom.hex()+str(packetNumber)+'.in').split())
-
-    #print(output)
-
-    ###NEW CODE -> COMPUTATION FOR A NEW SERVER"########
-
-    print("#######Ready to send to Server!#######")
+    print("Offloading proof to send to server")
     command = method+" "+pathstr
     files = {
         'provKey': open('files/provKey.bin', 'rb'),
@@ -299,15 +228,20 @@ def make_tls_connection(SERVER, pathstr, keepalive, circuitname, tree_path, allo
         "packet_number": packetNumber
     }
 
-    print("#######Ready to send to Server!#######")
-    response = requests.post("http://172.19.0.5:5002/generate_proof", data=params, files=files)
-
-    proof_filename = f"files/proof{tls_conn._clientRandom.hex()}{packetNumber}.bin"
-    with open(proof_filename, "wb") as f:
-        f.write(response.content)
+    response = requests.post(f"http://{PROVER_IP}:{PROVER_PORT}/generate_proof", data=params, files=files)
+    if response.status_code != 200:
+        print("Error in sending proof to server:", response.status_code, response.text)
+        return None
+    else:
+        print("Proof successfully received")
+        proof_filename = f"files/proof{tls_conn._clientRandom.hex()}{packetNumber}.bin"
+        with open(proof_filename, "wb") as f:
+            f.write(response.content)
         
-
-    return (tls_conn._clientRandom, ['1'], [],[],[])
+    if testing:
+        return (tls_conn._clientRandom, ['1'], [], [], [])
+    else:
+        return (tls_conn._clientRandom, ['1'])
 
 
 if __name__ == '__main__':

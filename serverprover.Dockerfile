@@ -15,7 +15,6 @@ RUN apt-get update -qq && \
 	apt-get upgrade -qq
 RUN ln -fs /usr/share/zoneinfo/Europe/Rome /etc/localtime
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends $APT_DEPS
-#RUN  apt-get -y install tzdata
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends openjdk-17-jre
 RUN pip install --no-cache-dir --upgrade pip && \
@@ -27,13 +26,14 @@ COPY ./ServerProver /home/ServerProver
 COPY ./xjsnark_decompiled /home/xjsnark_decompiled
 COPY ./libsnark /home/libsnark
 WORKDIR /home/
-#RUN [ ! -d "libsnark/build" ] || [ -z "$(ls -A libsnark/build)" ] && (DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends $BUILD_DEPS && cd libsnark && mkdir -p build && cd build && cmake .. && make && apt-get remove -y $BUILD_DEPS)
+
+#building libsnark - you can build it outside of the container by running the same build commands [cmake .. -DMULTICORE=ON -DUSE_PT_COMPRESSION=OFF && make]
 RUN set -e; \
     if [ ! -d "libsnark/build" ] || [ -z "$(ls -A libsnark/build)" ]; then \
         echo "Building libsnark..."; \
         apt-get update -qq && \
         DEBIAN_FRONTEND=noninteractive apt-get install -qq --no-install-recommends $BUILD_DEPS && \
-        cd libsnark && mkdir -p build && cd build && cmake .. && make && \
+        cd libsnark && mkdir -p build && cd build && cmake .. -DMULTICORE=ON -DUSE_PT_COMPRESSION=OFF && make && \
         apt-get remove -y $BUILD_DEPS && apt-get autoremove --purge -qq; \
     else \
         echo "libsnark already built, skipping."; \

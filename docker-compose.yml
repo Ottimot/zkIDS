@@ -1,9 +1,4 @@
 services:
-
- 
-
- 
-  # NEW SERVER PROVER
     serverprover:
         image: serverprover
         build:
@@ -15,34 +10,26 @@ services:
         command: bash -c "python init_serverp.py"
         cap_add:
             - NET_ADMIN
-            - NET_RAW
         stdin_open: true   # docker run -i
         tty: true          # docker run -t
         sysctls:
-            - net.ipv4.ip_forward=1
             - net.ipv4.tcp_timestamps=0
         networks:
             default:
                 ipv4_address: 172.19.0.5
         volumes:
             - tests:/home/Tests
-
-
-    
    
     middlebox:
         image: middlebox
         build: 
             context: ./
             dockerfile: middlebox.Dockerfile
-        #direct startup of webserver
         working_dir: /home/Middlebox
         env_file: 
             - vars.env
+        #change the eth0 interface in case of differences
         command: bash -c "python capture.py eth0 &! python init_mb$${TEST}.py $${MB_ARGS}"
-        #command: "/bin/bash"
-        #ports:
-        #    - 9090:9090
         cap_add:
             - NET_ADMIN
             - NET_RAW
@@ -56,7 +43,7 @@ services:
                 ipv4_address: 172.19.0.2
         volumes:
             - tests:/home/Tests
-    #creare il dockerfile per il compilatore con i comandi di installazione    
+
     client:
         image: client
         build: 
@@ -65,7 +52,7 @@ services:
         working_dir: /home/Client
         env_file: 
             - vars.env
-        #command: "python init_cli.py"
+        #forward traffic via the middlebox
         command: bash -c "ip route add 172.19.0.4 via 172.19.0.2 dev eth0 src 172.19.0.3 && python init_cli$${TEST}.py $${RUN} docker"
         stdin_open: true # docker run -i
         tty: true        # docker run -t
@@ -83,6 +70,7 @@ services:
             dockerfile: server.Dockerfile
         stdin_open: true
         tty: true
+        #forward traffic via the middlebox
         command: bash -c "ip route add 172.19.0.3 via 172.19.0.2 dev eth0 src 172.19.0.4 && nginx -g 'daemon off;'"
         cap_add:
             - NET_ADMIN

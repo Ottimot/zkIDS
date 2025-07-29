@@ -1,4 +1,5 @@
 from flask import Flask, request, send_file, jsonify
+import sys, os
 import subprocess
 import os
 sys.path.insert(0, "./Merkle Proof")

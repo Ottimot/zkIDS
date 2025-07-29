@@ -1,6 +1,7 @@
 from flask import Flask, request, send_file, jsonify
 import subprocess
 import os
+sys.path.insert(0, "./Merkle Proof")
 from membership_proofs import *
 
 app = Flask(__name__)
